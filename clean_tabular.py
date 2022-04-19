@@ -85,7 +85,7 @@ class CleanTabular:
 
 if __name__ == "__main__":
     #read data from file
-    product_data = pd.read_json("products_table.json")
+    product_data = pd.read_json("data/products_table.json")
     #perform cleaning
     cleaner = CleanTabular(product_data)
     cleaner.remove_null()
@@ -96,5 +96,5 @@ if __name__ == "__main__":
     #retrieve the data from class
     product_data = cleaner.get_product_df()
     #send the data to file
-    product_data.to_json("products_table_clean.json")
+    product_data.to_json("data/products_table_clean.json")
 

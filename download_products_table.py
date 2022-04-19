@@ -16,5 +16,5 @@ print("Connecting to database...")
 engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DATABASE}")        
 df = pd.read_sql_table("products", engine)     
 
-print("Saved as products_table.json")
-df.to_json("products_table.json")
+print("Saved as data/products_table.json")
+df.to_json("data/products_table.json")
