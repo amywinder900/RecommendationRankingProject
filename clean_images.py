@@ -85,13 +85,10 @@ class CleanImages:
                 image_name = image_path.split("/")[-1]
                 
                 if image_name not in list_of_cleaned_images:
-                    #print("Cleaning ", image_name)
                     img = self.clean_image(image_path)
                     # save to file
                     new_file_path = self.target_folder + image_name
                     img.save(new_file_path)
-                #else:
-                    #print(image_name, " is already in target folder.")
                 
                 bar()
 
