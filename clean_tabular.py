@@ -1,5 +1,6 @@
 import pandas as pd 
 from pandas import DataFrame
+import numpy as np
 
 class CleanTabular:
     """ This class is used to clean tabular data.
@@ -12,31 +13,19 @@ class CleanTabular:
         """
         self.product_df = product_df
 
-    @staticmethod
-    def filter_rows_by_values(product_df:DataFrame, columns:list, values:list) -> DataFrame:
-        """
-        For a given dataframe, returns a dataframe which contains given values in selected columns.
-        
-        Arguments:
-            product_df(DataFrame): The dataframe to work with. 
-            columns(array): The columns to check.
-            values(array): The values to check for.
-        
-        Returns:
-            product_df(DataFrame):The resulting DataFrame. 
-
-        """
-        product_df = product_df[~product_df[columns].isin(values)]
-        return product_df
 
     def remove_null(self) -> None:
         """
         Removes the rows with null values. 
         
         """
-        self.product_df.dropna(inplace=True)
-        #remove rows with "N/A" in any column
-        self.product_df = CleanTabular.filter_rows_by_values(self.product_df, self.product_df.columns, ["N/A"])
+        temp_df = self.product_df
+        #replaces the "N/A" characters with numpy null values
+        temp_df = temp_df.replace("N/A", np.nan)
+
+        temp_df.dropna(inplace=True)
+        
+        self.product_df = temp_df
         return None
 
     def clean_prices(self) -> None:
@@ -49,26 +38,21 @@ class CleanTabular:
         
         return None
 
-    @staticmethod
-    def extract_county(location:str) -> str:
+    def create_main_category_column(self)-> None:
         """
-        Retrieves the county/greater area from the location.
-        
-        Arguments:
-            location(str): A location with the format "city, county"
-        Returns:
-            county(str): The county from the location.
-        
+        Creates a column which displays the main category. 
+
         """
-        county = location.split(",")[-1].strip()
-        return county
+        self.product_df["main_category"] = self.product_df["category"].apply(lambda x: x.split("/")[0])
+        
+        return None
 
     def add_county_column(self) -> None :
         """
         Adds a column which shows the county. 
         
         """
-        self.product_df["county"] = self.product_df["location"].apply(CleanTabular.extract_county)
+        self.product_df["county"] = self.product_df["location"].apply(lambda x: x.split(",")[-1].strip())
         return None
     
     def remove_duplicates(self) -> None:
@@ -80,21 +64,32 @@ class CleanTabular:
         self.product_df.drop_duplicates(subset=columns, keep="first", )
         return None
 
-    def get_product_df(self):
+    def get_product_df(self) -> DataFrame:
+        """
+        Retrieves the dataframe. 
+
+        Returns:
+            self.product_df(DataFrame): The dataframe for this instance of the class.
+        """
+
         return self.product_df
 
 if __name__ == "__main__":
     #read data from file
+    print("Reading data from data/products_table.json")
     product_data = pd.read_json("data/products_table.json")
     #perform cleaning
+    print("Cleaning data")
     cleaner = CleanTabular(product_data)
     cleaner.remove_null()
     cleaner.clean_prices()
-    #TODO fix bug with county column
-    # cleaner.add_county_column()
+    cleaner.add_county_column()
+    cleaner.create_main_category_column()
     cleaner.remove_duplicates()
     #retrieve the data from class
     product_data = cleaner.get_product_df()
     #send the data to file
+    print("Sending cleaned data to data/products_table_clean.json")
     product_data.to_json("data/products_table_clean.json")
+
 
