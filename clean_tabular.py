@@ -43,7 +43,7 @@ class CleanTabular:
         Creates a column which displays the main category. 
 
         """
-        self.product_df["main_category"] = self.product_df["category"].apply(lambda x: x.split("/")[0])
+        self.product_df["main_category"] = self.product_df["category"].apply(lambda x: x.split("/")[0].strip())
         
         return None
 
