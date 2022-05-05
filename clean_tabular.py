@@ -16,17 +16,17 @@ class CleanTabular:
         """
         self.product_df = product_df
 
-    def drop_columns(self, columns:list) -> None:
-        """
-        Takes in a list of columns and drops them from the dataframe. 
+    # def drop_columns(self, columns:list) -> None:
+    #     """
+    #     Takes in a list of columns and drops them from the dataframe. 
 
-        Attributes:
-            columns(list): The list of column names.
+    #     Attributes:
+    #         columns(list): The list of column names.
 
-        """
-        self.product_df = self.product_df.drop(columns, axis=1)
+    #     """
+    #     self.product_df = self.product_df.drop(columns, axis=1)
 
-        return None
+    #     return None
 
     def remove_null(self) -> None:
         """
@@ -151,16 +151,18 @@ class CleanTabular:
         return self.product_df
 
 if __name__ == "__main__":
+    #file locations
+    data_location = "data/products_table.json"
+    save_location = "data/products_table_clean.json"
+
     #read data from file
-    print("Reading data from data/products_table.json")
-    product_data = pd.read_json("data/products_table.json")
+    print("Reading data from ", data_location)
+    product_data = pd.read_json(data_location)
 
     #perform cleaning
     print("Cleaning data")
     cleaner = CleanTabular(product_data)
-    unneeded_columns = ["id","product_name", "product_description","page_id","create_time"]
     cleaner.remove_duplicates()
-    cleaner.drop_columns(unneeded_columns)
     cleaner.remove_null()
     cleaner.clean_prices()
     cleaner.create_longitude_and_latitude_columns()
@@ -171,7 +173,7 @@ if __name__ == "__main__":
     product_data = cleaner.get_product_df()
 
     #send the data to file
-    print("Sending cleaned data to data/products_table_clean.json")
-    product_data.to_json("data/products_table_clean.json")
+    print("Sending cleaned data to ", save_location)
+    product_data.to_json(save_location)
 
 
