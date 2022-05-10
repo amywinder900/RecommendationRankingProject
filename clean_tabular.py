@@ -128,6 +128,7 @@ class CleanTabular:
     def encode_categorical_data(self, column_name: str) -> None:
         """
         Given the name of a column, this method encodes the categorical data by creating a new column for each category with binary True/False values. 
+        The method drops the first encoded column so that the data is linearly independent. 
 
         Attributes
             column_name(str): The name of the column containing thecategorical data.
@@ -138,7 +139,7 @@ class CleanTabular:
         ).replace('[^0-9a-zA-Z]+', '_', regex=True)
         # create the category encodings
         category_encodings = pd.get_dummies(
-            self.product_df[column_name], prefix=column_name)
+            self.product_df[column_name], prefix=column_name, drop_first=True)
         # merge the dataframes
         self.product_df = pd.concat(
             [self.product_df, category_encodings], axis=1)
@@ -154,9 +155,9 @@ class CleanTabular:
 
         return None
 
-    def clean_data(self):
+    def prepare_data(self):
         """
-        Method to run the standard data cleaning steps. 
+        Method to run the standard data cleaning steps so that it is ready for basic machine learning algorithms. 
         """
 
         CleanTabular.remove_duplicates(self)
@@ -181,7 +182,7 @@ class CleanTabular:
 if __name__ == "__main__":
     # file locations
     data_location = "data/products_table.json"
-    save_location = "data/products_table_clean.json"
+    save_location = "data/products_table_for_linear_regression.json"
 
     # read data from file
     print("Reading data from ", data_location)
@@ -190,7 +191,7 @@ if __name__ == "__main__":
     # perform cleaning
     print("Cleaning data")
     cleaner = CleanTabular(product_data)
-    cleaner.clean_data()
+    cleaner.prepare_data()
 
     # retrieve the data from class
     product_data = cleaner.get_product_df()
