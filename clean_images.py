@@ -96,5 +96,5 @@ class CleanImages:
 
 
 if __name__ == "__main__":
-    cleaner = CleanImages("data/images/", "data/cleaned_images/")
+    cleaner = CleanImages("data/images/", "data/cleaned_images_64/", 64)
     cleaner.clean_all_images()
