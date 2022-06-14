@@ -99,7 +99,7 @@ class PrepareData:
     
     def create_dict_of_categories(self): 
         categories = set(self.product_df["main_category"]) 
-        categories_dict = {k: v for v, k in enumerate(categories)} 
+        categories_dict = {k: (v - 1) for v, k in enumerate(categories)} 
         self.categories_dict = categories_dict
         return categories_dict
 
