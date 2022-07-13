@@ -7,6 +7,7 @@ from alive_progress import alive_bar
 from torchvision.transforms import ToTensor
 from clean_tabular import CleanTabular
 from os.path import isfile
+import pickle
 
 
 class PrepareData:
@@ -143,14 +144,19 @@ class PrepareData:
     def save_to_files(self, X_file_location, y_file_location):
         np.save(X_file_location, self.X)
         np.save(y_file_location, self.y)
-        np.save("data/encoder.npy", self.encoder)
-        np.save("data/decoder.npy", self.decoder)
+
+        with open('data/encoder.pickle', 'wb') as handle:
+            pickle.dump(self.encoder, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+        with open('data/decoder.pickle', 'wb') as handle:
+            pickle.dump(self.decoder, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
         return None
 
 
 if __name__ == "__main__":
 
-    image_size = 124
+    image_size = 128
     credentials_location = ".gitignore/credentials_for_marketplace.yml"
     images_folder = "data/cleaned_images_" + str(image_size)
     X_array_folder = "data/X_for_image_"+ str(image_size) + ".npy"
