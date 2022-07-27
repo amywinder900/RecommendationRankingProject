@@ -21,7 +21,7 @@ In tablular_linear_regression.ipynb I implemented some basic machine learning mo
 
 In image_classifcation.ipynb I run my image data through a pipeline so that i can use a sklearn logistic regression model which predicts the category of an image. This is a simple model and only has an accuracy of 16 to 17%.
 
-# Milestone 2 
+# Milestone 3 
 In vision_model.ipynb I used transfer learning from Resnet50 to create a neural network which classifies my images. I replaced the final layer of Resnet with some of my own layers. 
 
 To speed up the training process, only the last three layers of Resnet50 and my own layers are trained. Additionally, the function has can load and save pretrained versions of the model, which speeds up testing of different hyperparameters. 
