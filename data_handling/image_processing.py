@@ -9,7 +9,7 @@ from clean_tabular import CleanTabular
 from os.path import isfile
 import pickle
 
-
+#NOTE this file is kept in place for the classification model, but going forwards new code should be developed using image_loader.py
 class PrepareData:
     """
     Class to process images for a classifcation model.
@@ -166,4 +166,3 @@ if __name__ == "__main__":
     product_df, image_df = pipeline.retrieve_dataframes(credentials_location)
     X, y = pipeline.form_arrays(images_folder, image_size, n=10 )
     pipeline.save_to_files(X_array_folder, y_array_folder)
-    pass
