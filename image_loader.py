@@ -100,9 +100,7 @@ def create_data_loaders(images_location: str,
 
     Parameters:
 
-      X(numpy.ndarray): The image data as a numpy array.
-
-      y(numpy.ndarray): The image category data as a numpy array. 
+      images_location(str): The path to the file containing the cleaned images. 
 
       image_dataset(Dataset): The dataset object which prepares the image and the category label. 
 
