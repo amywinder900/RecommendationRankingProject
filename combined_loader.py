@@ -12,7 +12,8 @@ import random
 from transformers import BertTokenizer
 from transformers import BertModel
 import pandas as pd
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, SubsetRandomSampler, DataLoader
+import numpy as np
 
 # %%
 
@@ -65,7 +66,7 @@ class ImageTextProductDataset(Dataset):
         label = torch.as_tensor(label)
         image = Image.open(self.images_location +
                            self.image_ids[index] + ".jpg")
-        image = self.transform(image)
+        image = self.image_transform(image)
 
         sentence = self.descriptions[index]
         encoded = self.tokenizer.batch_encode_plus([sentence], max_length = self.max_text_length, padding = "max_length", truncation=True)
@@ -90,6 +91,66 @@ class ImageTextProductDataset(Dataset):
         products_images.to_json('data/product_images.json')
 
         return products_images
+
+
+def create_data_loaders(images_location: str,
+                        image_dataset:Dataset,  
+                        image_size:int,
+                        image_transforms:dict, 
+                        load_image_category_table=True,  
+                        validation_split:float=0.2, 
+                        batch_size:int=16, 
+                        shuffle:bool=True):
+    """
+    This function creates the dataloaders with a training and validation split. 
+
+    Parameters:
+
+      images_location(str): The path to the file containing the cleaned images. 
+
+      image_dataset(Dataset): The dataset object which prepares the image and the category label. 
+
+      image_side_length(int): The side length of the images. 
+
+      image_transforms(dict): A dictionary containing the the transformation or list of transformations to be done to the image. It should contain transformations for the train and validation phases using the keys "train" and "val". 
+
+      validation_split(float): The proportion of the dataset which should be used for validation. Default is 0.2
+
+      batch_size(int): The batch size to process the images in. 
+
+      shuffle(bool): Whether or not to shuffle the order of the images. Default is true.
+
+
+    """
+    dataset_length = len(image_dataset(images_location, image_size, load_image_category_table))
+
+    # find split
+    split_indice = int(np.floor(validation_split * dataset_length))
+
+    # create list of indices and shuffle
+    indices = list(range(dataset_length))
+    if shuffle:
+        np.random.shuffle(indices)
+
+    # Create dictionary of dataset sizes
+    dataset_sizes = {"train": dataset_length - int(np.floor(validation_split * dataset_length)),
+                     "val": int(np.floor(validation_split * dataset_length))}
+
+    # Create sampler
+    sampler = {"train": SubsetRandomSampler(indices[split_indice:]),
+               "val": SubsetRandomSampler(indices[:split_indice])}
+
+    # Form datasets
+    dataset = {phase: image_dataset(images_location, image_size,load_image_category_table ,image_transform=image_transforms[phase])
+               for phase in ["train", "val"]}
+
+    # Load data for each phase
+    data_loader = {phase: DataLoader(dataset[phase], batch_size=batch_size, sampler=sampler[phase])
+                   for phase in ["train", "val"]}
+
+    return data_loader, dataset_sizes
+
+
 #%%
 if __name__ == '__main__':
     dataset = ImageTextProductDataset("data/cleaned_images_128/", 128, True)
