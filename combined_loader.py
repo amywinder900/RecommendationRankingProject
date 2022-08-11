@@ -3,12 +3,8 @@ import torchvision.transforms as transforms
 from pathlib import Path
 from tqdm import tqdm
 from PIL import Image
-from PIL import ImageFile
-import requests
-import random
 import torch
 import os
-import random
 from transformers import BertTokenizer
 from transformers import BertModel
 import pandas as pd
