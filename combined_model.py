@@ -60,10 +60,8 @@ class ImageModel(torch.nn.Module):
     
 #%%
 class CombinedModel(nn.Module):
-    def __init__(self):
+    def __init__(self, device="cpu"):
         super(CombinedModel, self).__init__()
-
-        device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
         self.text_model = TextModel(50).to(device)
         self.image_model = ImageModel().to(device)
@@ -195,7 +193,7 @@ def train(epochs, model, optimiser, model_save_location=None, model_load_locatio
 # Checks if GPU is avaliable to run on.
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = CombinedModel()
+model = CombinedModel(device=device).to(device)
 optimiser = torch.optim.SGD(model.parameters(), lr = 0.001, momentum=0.9) 
 model = train(40, model, optimiser, model_save_location="/content/drive/My Drive/coding/vision_model_state.pt", device=device)
 # %%
