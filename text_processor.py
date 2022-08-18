@@ -10,7 +10,7 @@ import numpy as np
 
 
 class CNN(torch.nn.Module):
-    def __init__(self,  embedding_size, decoder):
+    def __init__(self,  embedding_size, decoder=None):
         super().__init__()
 
         self.decoder = decoder
