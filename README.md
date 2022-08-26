@@ -33,6 +33,60 @@ Using Neural Networks, this component of the project predicts the category of a 
 ## Loading data 
 
 ## Network Structures 
-The image model takes advantage of Resnet50 via transfer learning. The final few layers have been replaced to suit this task. The text model consists of convolution layers and linear layers. Finally the combined model combines the two and applies a final linear layer, meaning that the text model and the image model can be trained seperately. The models and their layers are as follows: 
-
+The image model takes advantage of Resnet50 via transfer learning. The final few layers have been replaced to suit this task. The text model consists of convolution layers and linear layers. Finally the combined model combines the two and applies a final linear layer, meaning that the text model and the image model can be trained seperately. The models and their layers are as follows:
+ 
+===========================================================================
+Layer (type:depth-idx)                             Param #
+===========================================================================
+CombinedModel                                      --
+├─TextModel: 1-1                                   --
+│    └─Sequential: 2-1                             --
+│    │    └─Conv1d: 3-1                            38,656
+│    │    └─ReLU: 3-2                              --
+│    │    └─MaxPool1d: 3-3                         --
+│    │    └─Flatten: 3-4                           --
+│    │    └─Linear: 3-5                            25,166,080
+│    │    └─ReLU: 3-6                              --
+│    │    └─Linear: 3-7                            3,341
+├─ImageModel: 1-2                                  --
+│    └─ResNet: 2-2                                 --
+│    │    └─Conv2d: 3-8                            (9,408)
+│    │    └─BatchNorm2d: 3-9                       (128)
+│    │    └─ReLU: 3-10                             --
+│    │    └─MaxPool2d: 3-11                        --
+│    │    └─Sequential: 3-12                       --
+│    │    │    └─Bottleneck: 4-1                   (75,008)
+│    │    │    └─Bottleneck: 4-2                   (70,400)
+│    │    │    └─Bottleneck: 4-3                   (70,400)
+│    │    └─Sequential: 3-13                       --
+│    │    │    └─Bottleneck: 4-4                   (379,392)
+│    │    │    └─Bottleneck: 4-5                   280,064
+│    │    │    └─Bottleneck: 4-6                   280,064
+│    │    │    └─Bottleneck: 4-7                   280,064
+│    │    └─Sequential: 3-14                       --
+│    │    │    └─Bottleneck: 4-8                   1,512,448
+│    │    │    └─Bottleneck: 4-9                   1,117,184
+│    │    │    └─Bottleneck: 4-10                  1,117,184
+│    │    │    └─Bottleneck: 4-11                  1,117,184
+│    │    │    └─Bottleneck: 4-12                  1,117,184
+│    │    │    └─Bottleneck: 4-13                  1,117,184
+│    │    └─Sequential: 3-15                       --
+│    │    │    └─Bottleneck: 4-14                  6,039,552
+│    │    │    └─Bottleneck: 4-15                  4,462,592
+│    │    │    └─Bottleneck: 4-16                  4,462,592
+│    │    └─AdaptiveAvgPool2d: 3-16                --
+│    │    └─Sequential: 3-17                       --
+│    │    │    └─Linear: 4-17                      1,049,088
+│    │    │    └─ReLU: 4-18                        --
+│    │    │    └─Dropout: 4-19                     --
+│    │    │    └─Linear: 4-20                      131,328
+│    │    │    └─ReLU: 4-21                        --
+│    │    │    └─Linear: 4-22                      3,341
+├─Sequential: 1-3                                  --
+│    └─Linear: 2-3                                 351
+===========================================================================
+Total params: 49,900,217
+Trainable params: 49,229,817
+Non-trainable params: 670,400
+===========================================================================
 
