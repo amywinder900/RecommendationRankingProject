@@ -2,12 +2,18 @@
 Creating a Facebook style marketplace data pipeline. 
 
 # Data Handling 
+This module processes data and stores locally in a /data folder. 
 
 ## download_products_table.DownloadTables
 The download_products_table.py file retrieves information from a RDS database, securely accressing credentials from a yaml on the local machine. The download will not be attempted if the table already exists on the local machine. 
 
 Attributes:
     crediential_location(str): The location of the yaml file containing the database credentials. It should contain DATABASE_TYPE, DBAPI, ENDPOINT, USER, PASSWORD, PORT, DATABASE
+
+Methods:
+    download_table: Downloads the table.
+        Attributes:
+            table(str): The name of the table.  
 
 ### How to use
 
@@ -17,18 +23,49 @@ First instantiate the class.
 Then download the table as a json file using the download_table method. 
 > downloader.download_table("Sales")
 
-
-The image cleaning.py file processes the table from the database. It will:
-    - drop unneeded columns
+## clean_tabular
+The image cleaning.py file processes the table from the database. Running the file will:
     - remove null values
     - covert the price column to a float
     - create columns for the longitude and latitude
     - encode the main_category as categorical data
-    - remove the duplicates.
-
+    - remove the duplicates
 The data is then sent to data/products_table_clean.json 
 
+## clean_tabular.CleanTabular
+This class is used to clean tabular data.
+
+Attributes:
+    product_df (DataFrame): the dataframe.
+
+Methods:
+    drop_columns: Takes in a list of columns and drops them from the dataframe.
+        Attributes:
+            columns(list): The list of column names.
+
+    remove_null: Removes the rows with null values. 
+
+    clean_prices:Cleans the prices and converts to integer. 
+
+    retrieve_longitude_and_latitude: A static method. Given a location of the form "city, district" or similar, retrieves the longitude and latitude.
+
+    create_longitude_and_latitude_columns: Adds columns for longitude and latitude in the DataFrame. 
+
+    create_main_category_column: Creates a column which displays the main category. 
+
+    encode_categorical_data: Given the name of a column, this method encodes the categorical data by creating a new column for each category with binary True/False values. 
+
+    remove_duplicates: Removes the duplicates from the dataframe. 
+
+    prepare_data: Method to run the standard data cleaning steps so that it is ready for basic machine learning algorithms. 
+
+    get_product_df: Retrieves the dataframe. 
+    
+## clean_images.py
+
+
 The clean_images.py file takes images from a folder uses the PIL library to clean the jpgs ready for use in machine learning. It standardises the size by adding a black border and reduces the number of channels down to RGB. It uses an alive progress bar to document progress and skips over images which have already been cleaned.
+
 
 # Shallow Algorithms
 

@@ -6,10 +6,11 @@ from tqdm import tqdm
 
 
 class CleanTabular:
-    """ This class is used to clean tabular data.
+    """ 
+    This class is used to clean tabular data.
 
     Attributes:
-        product_df (DataFrame): the updated dataframe.
+        product_df (DataFrame): The dataframe.
     """
 
     def __init__(self, product_df: DataFrame):
@@ -18,17 +19,17 @@ class CleanTabular:
         """
         self.product_df = product_df
 
-    # def drop_columns(self, columns:list) -> None:
-    #     """
-    #     Takes in a list of columns and drops them from the dataframe.
+    def drop_columns(self, columns:list) -> None:
+        """
+        Takes in a list of columns and drops them from the dataframe.
 
-    #     Attributes:
-    #         columns(list): The list of column names.
+        Attributes:
+            columns(list): The list of column names.
 
-    #     """
-    #     self.product_df = self.product_df.drop(columns, axis=1)
+        """
+        self.product_df = self.product_df.drop(columns, axis=1)
 
-    #     return None
+        return None
 
     def remove_null(self) -> None:
         """
@@ -69,7 +70,9 @@ class CleanTabular:
     def retrieve_longitude_and_latitude(location: str):
         """
         Given a location of the form "city, district" or similar, retrieves the longitude and latitude.
-
+        
+        Attributes:
+            location(str): location in the frorm "city, district"
         Returns:
             latitude(float): The latutude of a location. If the location can't be found then the function returns np.nan
             longitude(float): The longitude of a location. If the location can't be found then the function returns np.nan
