@@ -27,7 +27,12 @@ For the tabular linear regression, the best score was achieved using the Ridge m
 
 For the image classification, the model produces an accuracy of 16 to 17%. This is better than random guessing, which would give an accuracy of around 8% but the task is not within the capablities of the model.
 
-# Milestone 3 
-In vision_model.ipynb I used transfer learning from Resnet50 to create a neural network which classifies my images. I replaced the final layer of Resnet with some of my own layers. 
+# Neural Networks
+Using Neural Networks, this component of the project predicts the category of a product based on the image and description of the product. 
 
-To speed up the training process, only the last three layers of Resnet50 and my own layers are trained. Additionally, the function has can load and save pretrained versions of the model, which speeds up testing of different hyperparameters. 
+## Loading data 
+
+## Network Structures 
+The image model takes advantage of Resnet50 via transfer learning. The final few layers have been replaced to suit this task. The text model consists of convolution layers and linear layers. Finally the combined model combines the two and applies a final linear layer, meaning that the text model and the image model can be trained seperately. The models and their layers are as follows: 
+
+
