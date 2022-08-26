@@ -1,6 +1,7 @@
 # RecommendationRankingProject
 Creating a Facebook style marketplace data pipeline. 
-# Milestone 1 
+
+# Data Handling 
 The download_products_table.py file retrieves information from a RDS database, securely accressing credentials from a yaml on the local machine.
 
 The image cleaning.py file processes the table from the database. It will:
@@ -15,11 +16,16 @@ The data is then sent to data/products_table_clean.json
 
 The clean_images.py file takes images from a folder uses the PIL library to clean the jpgs ready for use in machine learning. It standardises the size by adding a black border and reduces the number of channels down to RGB. It uses an alive progress bar to document progress and skips over images which have already been cleaned.
 
-# Milestone 2
+# Shallow Algorithms
 
-In tablular_linear_regression.ipynb I implemented some basic machine learning models to predict the price of an item based on the item category and the location of the poster. I used a grid search to tune hyperparameters for a ridge model, lasso model and an elastic net model via sklearn. The best score I got was by using the Ridge model with an alpha of 10. However, this only provided an accuracy rating (R2) of  0.08755583314162077. This makes sense as the data I'm providing the model isn't particularly relevant to the price of a product.
+tabular_linear_regression.ipynb implements basic machine learning models to predict the price of items based on item category and poster location. A grid search has been used to tune hyperparameters for ridge model, lasso model and elatic net model, using sklearn. 
 
-In image_classifcation.ipynb I run my image data through a pipeline so that i can use a sklearn logistic regression model which predicts the category of an image. This is a simple model and only has an accuracy of 16 to 17%.
+image_classification.ipynb impliments a pipeline which makes use of sklearns logicstic regression to predict the category of an image. 
+
+## Evaluation 
+For the tabular linear regression, the best score was achieved using the Ridge model with an alpha of 10, providing a R2 rating of 0.08755583314162077. While this score isn't particularly good, it makes sense considering that the data used isn't particularly relevant to the price of a product. 
+
+For the image classification, the model produces an accuracy of 16 to 17%. This is better than random guessing, which would give an accuracy of around 8% but the task is not within the capablities of the model.
 
 # Milestone 3 
 In vision_model.ipynb I used transfer learning from Resnet50 to create a neural network which classifies my images. I replaced the final layer of Resnet with some of my own layers. 
