@@ -7,7 +7,6 @@ from combined_loader import ImageTextProductDataset, create_data_loaders
 import copy
 from torchvision import transforms
 from torch.nn import functional as F
-#%%
 from neural_network_models import CombinedModel
 #%%
 
@@ -37,91 +36,93 @@ batch_size = 8
 data_loader, dataset_sizes = create_data_loaders("data/cleaned_images_128/", ImageTextProductDataset, 128, data_transforms, validation_split=validation_split, batch_size=batch_size)
 
 #%%
-def train(epochs, model, optimiser, model_save_location=None, model_load_location=None, scheduler=None, device="cpu"):
-  writer = SummaryWriter()
+# def train(epochs, model, optimiser, model_save_location=None, model_load_location=None, scheduler=None, device="cpu"):
+#   writer = SummaryWriter()
 
-  if model_load_location != None:
-    model.load_state_dict(torch.load(model_load_location))
+#   if model_load_location != None:
+#     model.load_state_dict(torch.load(model_load_location))
 
-  best_model_weights = copy.deepcopy(model.state_dict())
-  best_accuracy = 0.0
+#   best_model_weights = copy.deepcopy(model.state_dict())
+#   best_accuracy = 0.0
 
-  for epoch in range(epochs):
-      print("-"*15)
-      print(f"Epoch number: {epoch}")
-      print("-"*15)
+#   for epoch in range(epochs):
+#       print("-"*15)
+#       print(f"Epoch number: {epoch}")
+#       print("-"*15)
 
-      for phase in ["train", "val"]:
+#       for phase in ["train", "val"]:
 
-        if phase == "train":
-          print("Training...")
-          model.train()
-        else:
-          print("Validating...")
-          model.eval()
+#         if phase == "train":
+#           print("Training...")
+#           model.train()
+#         else:
+#           print("Validating...")
+#           model.eval()
 
-        running_loss = 0.0
-        running_correct = 0 
+#         running_loss = 0.0
+#         running_correct = 0 
 
-        for batch_index, batch in enumerate(data_loader[phase]):
-          image_features, text_features, labels = batch
-          image_features, text_features, labels = image_features.to(device).float(),text_features.to(device).float(), labels.to(device)
+#         for batch_index, batch in enumerate(data_loader[phase]):
+#           image_features, text_features, labels = batch
+#           image_features, text_features, labels = image_features.to(device).float(),text_features.to(device).float(), labels.to(device)
 
-          #reset the optimiser each loop
-          optimiser.zero_grad()
+#           #reset the optimiser each loop
+#           optimiser.zero_grad()
 
-          #grad enabled in the training phase
-          with torch.set_grad_enabled(phase == "train"):
+#           #grad enabled in the training phase
+#           with torch.set_grad_enabled(phase == "train"):
             
-            outputs = model(image_features, text_features)
-            _, predictions = torch.max(outputs, 1)
+#             outputs = model(image_features, text_features)
+#             _, predictions = torch.max(outputs, 1)
             
 
-            # calculate the loss 
-            loss = F.cross_entropy(outputs, labels)
+#             # calculate the loss 
+#             loss = F.cross_entropy(outputs, labels)
             
-            #take optimisation steps in the training fase
-            if phase == "train":
-              loss.backward()
-              optimiser.step()
+#             #take optimisation steps in the training fase
+#             if phase == "train":
+#               loss.backward()
+#               optimiser.step()
 
 
-          # statistics
-          running_correct += torch.sum(predictions == labels.data)
+#           # statistics
+#           running_correct += torch.sum(predictions == labels.data)
           
-        if scheduler != None and phase == 'train':
-          scheduler.step()
+#         if scheduler != None and phase == 'train':
+#           scheduler.step()
 
 
-        epoch_loss = running_loss / dataset_sizes[phase]
-        epoch_acc = running_correct / dataset_sizes[phase]
+#         epoch_loss = running_loss / dataset_sizes[phase]
+#         epoch_acc = running_correct / dataset_sizes[phase]
 
 
 
 
-        print(f'Loss: {epoch_loss:.4f} Acc: {epoch_acc*100:.1f}%')
+#         print(f'Loss: {epoch_loss:.4f} Acc: {epoch_acc*100:.1f}%')
 
-        if phase == "train":
-          writer.add_scalar("Training Accuracy", epoch_acc*100, epoch)
-          writer.add_scalar('Training Loss', epoch_loss, epoch)
-        else:
-          writer.add_scalar("Validation Accuracy", epoch_acc*100, epoch)
-          writer.add_scalar('Validation Loss', epoch_loss, epoch)
+#         if phase == "train":
+#           writer.add_scalar("Training Accuracy", epoch_acc*100, epoch)
+#           writer.add_scalar('Training Loss', epoch_loss, epoch)
+#         else:
+#           writer.add_scalar("Validation Accuracy", epoch_acc*100, epoch)
+#           writer.add_scalar('Validation Loss', epoch_loss, epoch)
 
-        # deep copy the model
-        if phase == 'val' and epoch_acc > best_accuracy:
-            best_accuracy = epoch_acc
-            best_model_weights = copy.deepcopy(model.state_dict())
+#         # deep copy the model
+#         if phase == 'val' and epoch_acc > best_accuracy:
+#             best_accuracy = epoch_acc
+#             best_model_weights = copy.deepcopy(model.state_dict())
   
-        writer.flush()
+#         writer.flush()
 
-  # Load the best model weights
-  model.load_state_dict(best_model_weights)
+#   # Load the best model weights
+#   model.load_state_dict(best_model_weights)
 
-  if model_save_location != None:
-    torch.save(model.state_dict(), model_save_location)
+#   if model_save_location != None:
+#     torch.save(model.state_dict(), model_save_location)
 
-  return model 
+#   return model
+# 
+from neural_network_models import train 
 
 #%%
 # Checks if GPU is avaliable to run on.
@@ -129,5 +130,5 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = CombinedModel(device=device).to(device)
 optimiser = torch.optim.SGD(model.parameters(), lr = 0.001, momentum=0.9) 
-model = train(40, model, optimiser, model_save_location="/content/drive/My Drive/coding/vision_model_state.pt", device=device)
+model = train(40, model, optimiser,data_loader=data_loader, dataset_sizes=dataset_sizes, model_save_location="/content/drive/My Drive/coding/vision_model_state.pt", device=device, combined=True)
 # %%

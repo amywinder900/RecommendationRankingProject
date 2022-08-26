@@ -70,17 +70,17 @@ class TextProcessor:
                 **encoded).last_hidden_state.swapaxes(1, 2)
         return description
 # %%
-device = torch.device('cpu')
-with open('models/decoder.pickle', 'rb') as f:
-    decoder = pickle.load(f)
+if __name__=="__main__":
+    device = torch.device('cpu')
+    with open('models/decoder.pickle', 'rb') as f:
+        decoder = pickle.load(f)
 
 
-model = CNN(50, decoder)
-model.load_state_dict(torch.load(
-    "models/nlp_model_state.pt", map_location=device))
-model.eval()
+    model = CNN(50, decoder)
+    model.load_state_dict(torch.load(
+        "models/nlp_model_state.pt", map_location=device))
+    model.eval()
 
-# %%
-text = TextProcessor()(input("Enter description: "))
-model.predict_classes(text)
+    text = TextProcessor()(input("Enter description: "))
+    model.predict_classes(text)
 # %%
