@@ -20,7 +20,9 @@ class ProductImageCategoryDataset(Dataset):
 
         load_image_category_table(bool): If true, the class loads the image category table from data/image_category_table.json or if False it will create a new one. Default value is False.
 
-        transform: The transformation or list of transformations to be done to the image. If no transform is passed, the class will do a generic transformation to resize, convert it to a tensor, and normalize the numbers
+        transform: The transformation or list of transformations to be done to the image. If no transform is passed, the class will do a generic transformation to resize, convert it to a tensor, and normalize the numbers.
+
+        decoder(dict): The dictionary which assigns each category to a number, with the key being the number and the item being the category name. Default is None.
 
 
     """
@@ -29,7 +31,8 @@ class ProductImageCategoryDataset(Dataset):
                  images_location: str,
                  img_side_length: int,
                  load_image_category_table: bool = False,
-                 transform: transforms = None):
+                 transform: transforms = None,
+                 decoder:dict=None):
 
         super().__init__()
 
@@ -52,10 +55,14 @@ class ProductImageCategoryDataset(Dataset):
         self.category_labels = self.image_category_table["main_category"]
         assert len(self.image_ids) == len(self.category_labels)
 
-        # Create label encoder/decoder
-        self.labels = self.image_category_table['main_category'].to_list()
-        self.encoder = {y: x for (x, y) in enumerate(set(self.labels))}
-        self.decoder = {x: y for (x, y) in enumerate(set(self.labels))}
+        if decoder == None:
+            # Create label encoder/decoder
+            self.labels = self.image_category_table['main_category'].to_list()
+            self.encoder = {y: x for (x, y) in enumerate(set(self.labels))}
+            self.decoder = {x: y for (x, y) in enumerate(set(self.labels))}
+        else: 
+            self.decoder = decoder
+            self.encoder = {y:x for x, y in decoder.items()}
 
         self.transform = transform
         if transform is None:
@@ -94,7 +101,8 @@ def create_data_loaders(images_location: str,
                         image_transforms:dict, 
                         validation_split:float=0.2, 
                         batch_size:int=16, 
-                        shuffle:bool=True):
+                        shuffle:bool=True,
+                        decoder:dict=None):
     """
     This function creates the dataloaders with a training and validation split. 
 
@@ -113,6 +121,11 @@ def create_data_loaders(images_location: str,
       batch_size(int): The batch size to process the images in. 
 
       shuffle(bool): Whether or not to shuffle the order of the images. Default is true.
+
+    Returns:
+        data_loader(dict): The dictionary of dataloaders with keys "train" and "val". 
+
+        dataset_sizes(dict): The dictionary of dataset sizes with keys "train" and "val". 
 
 
     """
@@ -135,12 +148,12 @@ def create_data_loaders(images_location: str,
                "val": SubsetRandomSampler(indices[:split_indice])}
 
     # Form datasets
-    dataset = {phase: image_dataset(images_location, image_size, transform=image_transforms[phase])
+    dataset = {phase: image_dataset(images_location, image_size, transform=image_transforms[phase], decoder=decoder)
                for phase in ["train", "val"]}
 
     # Load data for each phase
-    data_loader = {phase: DataLoader(dataset[phase], batch_size=batch_size, sampler=sampler[phase])
+    data_loaders = {phase: DataLoader(dataset[phase], batch_size=batch_size, sampler=sampler[phase])
                    for phase in ["train", "val"]}
 
-    return data_loader, dataset_sizes
+    return data_loaders, dataset_sizes
 

@@ -66,21 +66,21 @@ This class is used to clean tabular data.
 The clean_images.py file takes images from a folder uses the PIL library to clean the jpgs ready for use in machine learning. It standardises the size by adding a black border and reduces the number of channels down to RGB. It uses an alive progress bar to document progress and skips over images which have already been cleaned.
 
 ## clean_images.CleanImage
-    This class is used to clean a folder of images. It will create a folder containing the new images. 
+This class is used to clean a folder of images. It will create a folder containing the new images. 
 
-        Attributes:
-            folder(str): The path to the folder containing the images in jpg format. Should be of the format "folder/to/images"
+    Attributes:
+        folder(str): The path to the folder containing the images in jpg format. Should be of the format "folder/to/images"
 
-            target_folder(str): The target folder to send the cleaned images to.
+        target_folder(str): The target folder to send the cleaned images to.
 
-            final_image_size(int): The dimensions for the final images. Default is 512.
+        final_image_size(int): The dimensions for the final images. Default is 512.
 
-        Methods:
-        retrieve_images: Collects a list of the images from the folder.
+    Methods:
+    retrieve_images: Collects a list of the images from the folder.
 
-        clean_image: Collects a list of the images from the folder.
-        
-        clean_all_images: Retrives the jpg images from the folder and cleans them.
+    clean_image: Collects a list of the images from the folder.
+    
+    clean_all_images: Retrives the jpg images from the folder and cleans them.
 
 # Shallow Algorithms
 
@@ -96,8 +96,52 @@ For the image classification, the model produces an accuracy of 16 to 17%. This 
 # Neural Networks
 Using Neural Networks, this component of the project predicts the category of a product based on the image and description of the product. 
 
-## Loading data 
+## Dataloaders
+Data for the neural networks have been created using torch.utils.data.Dataset. 
 
+### ProductImageCategoryDataset
+
+The ProductImageCategoryDataset object inherits its methods from the torch.utils.data.Dataset module.
+It loads images from a numpy array. The images should be processed so that the height and width is the same. 
+
+    Parameters:
+
+        images_location(str): The folder location containing the cleaned images.
+
+        img_side_length(int): The side length of the images. 
+
+        load_image_category_table(bool): If true, the class loads the image category table from data/image_category_table.json or if False it will create a new one. Default value is False.
+
+        transform: The transformation or list of transformations to be done to the image. If no transform is passed, the class will do a generic transformation to resize, convert it to a tensor, and normalize the numbers.
+
+        decoder(dict): The dictionary which assigns each category to a number, with the key being the number and the item being the category name. Default is None.
+
+### create_data_loaders
+
+This function creates the dataloaders with a training and validation split. 
+
+    Parameters:
+
+      images_location(str): The path to the file containing the cleaned images. 
+
+      image_dataset(Dataset): The dataset object which prepares the image and the category label. 
+
+      image_side_length(int): The side length of the images. 
+
+      image_transforms(dict): A dictionary containing the the transformation or list of transformations to be done to the image. It should contain transformations for the train and validation phases using the keys "train" and "val". 
+
+      validation_split(float): The proportion of the dataset which should be used for validation. Default is 0.2
+
+      batch_size(int): The batch size to process the images in. 
+
+      shuffle(bool): Whether or not to shuffle the order of the images. Default is true.
+
+    Returns:
+
+        data_loader(dict): The dictionary of dataloaders with keys "train" and "val". 
+
+        dataset_sizes(dict): The dictionary of dataset sizes with keys "train" and "val". 
+        
 ## Network Structures 
 The image model takes advantage of Resnet50 via transfer learning. The final few layers have been replaced to suit this task. The text model consists of convolution layers and linear layers. Finally the combined model combines the two and applies a final linear layer, meaning that the text model and the image model can be trained seperately. The models and their layers are as follows:
  
