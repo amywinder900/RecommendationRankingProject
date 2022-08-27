@@ -153,14 +153,23 @@ def train(epochs: int,
     Attributes: 
     
       epochs(int): The number of epochs to run the training loop for. 
+      
       model: An instantiated pytorch model which inherits from torch.nn.Module. 
+      
       optimiser: An optimiser from torch.nn.optim
+      
       data_loader(dict): A dictionary of dataloaders from torch.utils.data.Dataset. The keys should be "train" and "val". 
+      
       dataset_sizes(dict): A dictionary of the dataset sizes corresponding to the datasets. The keys should be "train" and "val"
+      
       model_save_location(str): The location of a model state to load in. Default is None. 
+      
       model_load_location(str): The location of a model state to save to. Default is None. 
+      
       scheduler: A learning rate scheduler from torch.optim. Default is None. 
+      
       device(str): Select the processing unit to send the model to. It can either be cpu or cuda. Default is cpu.
+      
       combined(bool): True if the model is processing both image features and text features. Default is False. 
 
     """
@@ -227,14 +236,10 @@ def train(epochs: int,
 
             epoch_acc = running_correct.double() / dataset_sizes[phase]
 
-            print(f'Loss: {epoch_loss:.4f} Acc: {epoch_acc*100:.1f}%')
-
             if phase == "train":
                 writer.add_scalar("Training Accuracy", epoch_acc*100, epoch)
-                writer.add_scalar('Training Loss', epoch_loss, epoch)
             else:
                 writer.add_scalar("Validation Accuracy", epoch_acc*100, epoch)
-                writer.add_scalar('Validation Loss', epoch_loss, epoch)
 
             # deep copy the model
             if phase == 'val' and epoch_acc > best_accuracy:
@@ -250,3 +255,5 @@ def train(epochs: int,
         torch.save(model.state_dict(), model_save_location)
 
     return model
+
+# %%

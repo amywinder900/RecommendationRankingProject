@@ -122,6 +122,8 @@ def create_data_loaders(images_location: str,
 
       shuffle(bool): Whether or not to shuffle the order of the images. Default is true.
 
+      decoder(dict): The dictionary which assigns each category to a number, with the key being the number and the item being the category name. Default is None.
+    
     Returns:
         data_loader(dict): The dictionary of dataloaders with keys "train" and "val". 
 
