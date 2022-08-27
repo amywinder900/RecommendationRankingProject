@@ -141,7 +141,7 @@ This function creates the dataloaders with a training and validation split.
         data_loader(dict): The dictionary of dataloaders with keys "train" and "val". 
 
         dataset_sizes(dict): The dictionary of dataset sizes with keys "train" and "val". 
-        
+
 ## Network Structures 
 The image model takes advantage of Resnet50 via transfer learning. The final few layers have been replaced to suit this task. The text model consists of convolution layers and linear layers. Finally the combined model combines the two and applies a final linear layer, meaning that the text model and the image model can be trained seperately. The models and their layers are as follows:
  
@@ -200,3 +200,7 @@ Trainable params: 49,229,817
 Non-trainable params: 670,400
 ===========================================================================
 
+# API
+
+## data_processor
+The ImageProcessor and TextProcessor classes prepare data to be sent in to the models. ImageProcessor can be called on a PIL Image. TextProcessor can be called on a string.
