@@ -65,6 +65,9 @@ class ProductTextCategoryDataset(torch.utils.data.Dataset):
 
         return description, label
 
+    def __len__(self):
+        return len(self.labels)
+
     def embed_text(self, description):
         encoded = self.tokenizer.batch_encode_plus(
             [description], max_length=self.max_length, padding='max_length', truncation=True)
