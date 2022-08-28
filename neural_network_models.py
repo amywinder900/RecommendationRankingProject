@@ -31,24 +31,24 @@ class TextModel(torch.nn.Module):
         return X
 
 
-def predict(self, image):
-    with torch.no_grad():
-        x = self.forward(image)
-        return x
+    def predict(self, image):
+        with torch.no_grad():
+            x = self.forward(image)
+            return x
 
 
-def predict_prob(self, image):
-    with torch.no_grad():
-        x = self.forward(image)
-        return torch.softmax(x, dim=1)
+    def predict_prob(self, image):
+        with torch.no_grad():
+            x = self.forward(image)
+            return torch.softmax(x, dim=1)
 
 
-def predict_class(self, image):
-    if self.decoder == None:
-        raise Exception("Decoder was not passed when instantiating model.")
-    with torch.no_grad():
-        x = self.forward(image)
-        return self.decoder(int(torch.argmax(x, dim=1)))
+    def predict_class(self, image):
+        if self.decoder == None:
+            raise Exception("Decoder was not passed when instantiating model.")
+        with torch.no_grad():
+            x = self.forward(image)
+            return self.decoder(int(torch.argmax(x, dim=1)))
 
 
 class ImageModel(torch.nn.Module):
