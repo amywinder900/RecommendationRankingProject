@@ -38,6 +38,7 @@ class ProductTextCategoryDataset(torch.utils.data.Dataset):
         self.labels = categories.to_list()
         # self.descriptions = descriptions.to_list()
 
+        #TODO fix this chokepoint 
         self.descriptions = [self.embed_text(
             description) for description in descriptions.to_list()]
 
@@ -48,7 +49,7 @@ class ProductTextCategoryDataset(torch.utils.data.Dataset):
             self.encoder = {y: x for (x, y) in enumerate(set(self.labels))}
             self.decoder = {x: y for (x, y) in enumerate(set(self.labels))}
 
-            with open('models/text_decoder.pickle', 'wb') as f:
+            with open('models/text_decoder.pickle', 'wb+') as f:
                 decoder = pickle.dump(decoder, f)
         else:
             self.decoder = decoder

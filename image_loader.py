@@ -61,7 +61,7 @@ class ProductImageCategoryDataset(Dataset):
             self.encoder = {y: x for (x, y) in enumerate(set(self.labels))}
             self.decoder = {x: y for (x, y) in enumerate(set(self.labels))}
 
-            with open('models/image_decoder.pickle', 'wb') as f:
+            with open('models/image_decoder.pickle', 'wb+') as f:
                 decoder = pickle.dump(decoder,f)
         else: 
             self.decoder = decoder
