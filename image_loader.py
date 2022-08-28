@@ -5,7 +5,7 @@ import os
 from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
 from torchvision import transforms
 from PIL import Image
-
+import pickle
 
 class ProductImageCategoryDataset(Dataset):
     """
@@ -60,6 +60,9 @@ class ProductImageCategoryDataset(Dataset):
             self.labels = self.image_category_table['main_category'].to_list()
             self.encoder = {y: x for (x, y) in enumerate(set(self.labels))}
             self.decoder = {x: y for (x, y) in enumerate(set(self.labels))}
+
+            with open('models/image_decoder.pickle', 'wb') as f:
+                decoder = pickle.dump(decoder,f)
         else: 
             self.decoder = decoder
             self.encoder = {y:x for x, y in decoder.items()}
