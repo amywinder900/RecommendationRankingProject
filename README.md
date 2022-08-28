@@ -99,7 +99,7 @@ Using Neural Networks, this component of the project predicts the category of a 
 ## Dataloaders
 Data for the neural networks have been created using torch.utils.data.Dataset. 
 
-### ProductImageCategoryDataset
+### image_loader.ProductImageCategoryDataset
 
 The ProductImageCategoryDataset object inherits its methods from the torch.utils.data.Dataset module.
 It loads images from a numpy array. The images should be processed so that the height and width is the same. 
@@ -116,7 +116,7 @@ It loads images from a numpy array. The images should be processed so that the h
 
         decoder(dict): The dictionary which assigns each category to a number, with the key being the number and the item being the category name. Default is None.
 
-### create_data_loaders
+### image_loader.create_data_loaders
 
 This function creates the dataloaders with a training and validation split. 
 
@@ -138,6 +138,45 @@ This function creates the dataloaders with a training and validation split.
 
     Returns:
 
+        data_loader(dict): The dictionary of dataloaders with keys "train" and "val". 
+
+        dataset_sizes(dict): The dictionary of dataset sizes with keys "train" and "val".
+
+### text_loader.ProductTextCategoryDataset
+The ProductTextCategoryDataset object inherits its methods from the torch.utils.data.Dataset module.
+
+    Parameters:
+
+        categories(): The pandas series corresponding to the product category labels.
+
+        descriptions(): The pandas series corresponding to the product descriptions. This should be in the same order as the category labels.
+
+        max_length(int): The number of words to consider in the description. Default is the first 50.
+
+        decoder(dict): The dictionary which assigns each category to a number, with the key being the number and the item being the category name. Default is None.
+
+### text_loader.create_data_loaders
+This function creates the dataloaders with a training and validation split. 
+
+    Parameters:
+
+        text_dataset(Dataset): The dataset object which prepares the text and the category label. 
+
+        categories(pd.Series): The pandas series corresponding to the product category labels.
+
+        descriptions(pd.Series): The pandas series corresponding to the product descriptions. This should be in the same order as the category labels.
+
+        max_length(int): The number of words to consider in the description. Default is the first 50.
+
+        validation_split(float): The proportion of the dataset which should be used for validation. Default is 0.2
+
+        batch_size(int): The batch size to process the images in. 
+
+        shuffle(bool): Whether or not to shuffle the order of the images. Default is true.
+
+      decoder(dict): The dictionary which assigns each category to a number, with the key being the number and the item being the category name. Default is None.
+
+    Returns:
         data_loader(dict): The dictionary of dataloaders with keys "train" and "val". 
 
         dataset_sizes(dict): The dictionary of dataset sizes with keys "train" and "val". 
