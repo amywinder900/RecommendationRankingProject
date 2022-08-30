@@ -82,7 +82,7 @@ class ProductTextCategoryDataset(torch.utils.data.Dataset):
 def create_data_loaders(text_dataset: Dataset,
                         categories: pd.Series,
                         descriptions: pd.Series,
-                        max_length: int = None,
+                        max_length: int = 50,
                         validation_split: float = 0.2,
                         batch_size: int = 16,
                         shuffle: bool = True,
