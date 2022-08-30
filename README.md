@@ -179,7 +179,46 @@ This function creates the dataloaders with a training and validation split.
     Returns:
         data_loader(dict): The dictionary of dataloaders with keys "train" and "val". 
 
-        dataset_sizes(dict): The dictionary of dataset sizes with keys "train" and "val". 
+        dataset_sizes(dict): The dictionary of dataset sizes with keys "train" and "val".
+
+### combined_loader.CombinedLoader
+
+The ImageTextProductDataset object inherits its methods from the torch.utils.data.Dataset module.
+
+    Parameters:
+
+        images_location(str): The path to the file containing the cleaned images. 
+
+        image_side_length(int): The side length of the images. 
+
+        load_image_category_table(bool): If True, loads the combined image and description table. Otherwise downloads the tables from the database. Default is False.
+
+        image_transforms(dict): A dictionary containing the the transformation or list of transformations to be done to the image. It should contain transformations for the train and validation phases using the keys "train" and "val". Default is None. 
+
+        max_text_length(int): The number of words to consider in the description. Default is the first 50.
+
+        decoder(dict): The dictionary which assigns each category to a number, with the key being the number and the item being the category name. Default is None.
+
+### combined_loader.create_data_loaders
+This function creates the dataloaders with a training and validation split. 
+
+    Parameters:
+
+      images_location(str): The path to the file containing the cleaned images. 
+
+      image_dataset(Dataset): The dataset object which prepares the image and the category label. 
+
+      image_side_length(int): The side length of the images. 
+
+      image_transforms(dict): A dictionary containing the the transformation or list of transformations to be done to the image. It should contain transformations for the train and validation phases using the keys "train" and "val". 
+
+      validation_split(float): The proportion of the dataset which should be used for validation. Default is 0.2
+
+      batch_size(int): The batch size to process the images in. 
+
+      shuffle(bool): Whether or not to shuffle the order of the images. Default is true.
+
+
 
 ## Network Structures 
 The image model takes advantage of Resnet50 via transfer learning. The final few layers have been replaced to suit this task. The text model consists of convolution layers and linear layers. Finally the combined model combines the two and applies a final linear layer, meaning that the text model and the image model can be trained seperately. The models and their layers are as follows:

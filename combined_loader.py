@@ -1,4 +1,4 @@
-#%%
+# %%
 import torchvision.transforms as transforms
 from pathlib import Path
 from tqdm import tqdm
@@ -10,16 +10,42 @@ from transformers import BertModel
 import pandas as pd
 from torch.utils.data import Dataset, SubsetRandomSampler, DataLoader
 import numpy as np
+import pickle
 
 # %%
 
 
 class ImageTextProductDataset(Dataset):
-    def __init__(self, images_location, img_side_length, load_image_category_table, image_transform=None, max_text_length=50):
+    """
+    The ImageTextProductDataset object inherits its methods from the torch.utils.data.Dataset module.
+
+    Parameters:
+
+        images_location(str): The path to the file containing the cleaned images. 
+
+        image_side_length(int): The side length of the images. 
+
+        load_image_category_table(bool): If True, loads the combined image and description table. Otherwise downloads the tables from the database. Default is False.
+
+        image_transforms(dict): A dictionary containing the the transformation or list of transformations to be done to the image. It should contain transformations for the train and validation phases using the keys "train" and "val". Default is None. 
+
+        max_text_length(int): The number of words to consider in the description. Default is the first 50.
+
+        decoder(dict): The dictionary which assigns each category to a number, with the key being the number and the item being the category name. Default is None.
+
+    """
+
+    def __init__(self,
+                 images_location: str,
+                 image_side_length: int,
+                 load_image_category_table: bool = False,
+                 image_transform=None,
+                 max_text_length=50,
+                 decoder=None):
 
         super().__init__()
 
-        self.img_side_length = img_side_length
+        self.imgage_side_length = image_side_length
 
         # Check image file exists
         if not os.path.exists(images_location):
@@ -38,10 +64,17 @@ class ImageTextProductDataset(Dataset):
         self.category_labels = self.image_category_table["main_category"]
         assert len(self.image_ids) == len(self.category_labels)
 
-        # Create label encoder/decoder
-        self.labels = self.image_category_table['main_category'].to_list()
-        self.encoder = {y: x for (x, y) in enumerate(set(self.labels))}
-        self.decoder = {x: y for (x, y) in enumerate(set(self.labels))}
+        if decoder == None:
+            # Create label encoder/decoder
+            self.labels = self.image_category_table['main_category'].to_list()
+            self.encoder = {y: x for (x, y) in enumerate(set(self.labels))}
+            self.decoder = {x: y for (x, y) in enumerate(set(self.labels))}
+
+            with open('models/image_decoder.pickle', 'wb+') as f:
+                decoder = pickle.dump(decoder, f)
+        else:
+            self.decoder = decoder
+            self.encoder = {y: x for x, y in decoder.items()}
 
         self.image_transform = image_transform
         if image_transform is None:
@@ -51,10 +84,12 @@ class ImageTextProductDataset(Dataset):
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
-        self.descriptions = self.image_category_table['product_description'].to_list()
+        self.descriptions = self.image_category_table['product_description'].to_list(
+        )
         self.max_text_length = max_text_length
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-        self.text_model = BertModel.from_pretrained('bert-base-uncased', output_hidden_states = True)
+        self.text_model = BertModel.from_pretrained(
+            'bert-base-uncased', output_hidden_states=True)
 
     def __getitem__(self, index):
         label = self.category_labels[index]
@@ -65,18 +100,19 @@ class ImageTextProductDataset(Dataset):
         image = self.image_transform(image)
 
         sentence = self.descriptions[index]
-        encoded = self.tokenizer.batch_encode_plus([sentence], max_length = self.max_text_length, padding = "max_length", truncation=True)
-        encoded = {key:torch.LongTensor(value) for key, value in encoded.items()}
+        encoded = self.tokenizer.batch_encode_plus(
+            [sentence], max_length=self.max_text_length, padding="max_length", truncation=True)
+        encoded = {key: torch.LongTensor(value)
+                   for key, value in encoded.items()}
         with torch.no_grad():
-            description = self.text_model(**encoded).last_hidden_state.swapaxes(1,2)
+            description = self.text_model(
+                **encoded).last_hidden_state.swapaxes(1, 2)
         description = description.squeeze(0)
-    
-        
+
         return image, description, label
 
     def __len__(self):
         return len(self.image_ids)
-        
 
     @staticmethod
     def create_image_category_table():
@@ -90,13 +126,13 @@ class ImageTextProductDataset(Dataset):
 
 
 def create_data_loaders(images_location: str,
-                        image_dataset:Dataset,  
-                        image_size:int,
-                        image_transforms:dict, 
-                        load_image_category_table=True,  
-                        validation_split:float=0.2, 
-                        batch_size:int=16, 
-                        shuffle:bool=True):
+                        image_dataset: Dataset,
+                        image_size: int,
+                        image_transforms: dict,
+                        load_image_category_table=True,
+                        validation_split: float = 0.2,
+                        batch_size: int = 16,
+                        shuffle: bool = True):
     """
     This function creates the dataloaders with a training and validation split. 
 
@@ -118,7 +154,8 @@ def create_data_loaders(images_location: str,
 
 
     """
-    dataset_length = len(image_dataset(images_location, image_size, load_image_category_table))
+    dataset_length = len(image_dataset(
+        images_location, image_size, load_image_category_table))
 
     # find split
     split_indice = int(np.floor(validation_split * dataset_length))
@@ -137,7 +174,7 @@ def create_data_loaders(images_location: str,
                "val": SubsetRandomSampler(indices[:split_indice])}
 
     # Form datasets
-    dataset = {phase: image_dataset(images_location, image_size,load_image_category_table ,image_transform=image_transforms[phase])
+    dataset = {phase: image_dataset(images_location, image_size, load_image_category_table, image_transform=image_transforms[phase])
                for phase in ["train", "val"]}
 
     # Load data for each phase
@@ -147,7 +184,7 @@ def create_data_loaders(images_location: str,
     return data_loader, dataset_sizes
 
 
-#%%
+# %%
 if __name__ == '__main__':
     dataset = ImageTextProductDataset("data/cleaned_images_128/", 128, True)
     print(dataset[2500])
@@ -162,4 +199,3 @@ if __name__ == '__main__':
         if i == 0:
             break
 # %%
-
