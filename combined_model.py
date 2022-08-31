@@ -7,33 +7,7 @@ from combined_loader import ImageTextProductDataset, create_data_loaders
 import copy
 from torchvision import transforms
 from torch.nn import functional as F
-from neural_network_models import CombinedModel
-#%%
-
-# Data augmentation and normalization for training
-# Just normalization for validation
-data_transforms = {
-    'train': transforms.Compose([
-        transforms.RandomResizedCrop(224),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ]),
-    'val': transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ]),
-}
-
-
-# Other batch hyperparameters
-validation_split = 0.2
-batch_size = 8
-
-# Create data loaders
-data_loader, dataset_sizes = create_data_loaders("data/cleaned_images_128/", ImageTextProductDataset, 128, data_transforms, validation_split=validation_split, batch_size=batch_size)
+from neural_network_models import CombinedModel, train
 
 #%%
 # def train(epochs, model, optimiser, model_save_location=None, model_load_location=None, scheduler=None, device="cpu"):
@@ -95,9 +69,6 @@ data_loader, dataset_sizes = create_data_loaders("data/cleaned_images_128/", Ima
 #         epoch_loss = running_loss / dataset_sizes[phase]
 #         epoch_acc = running_correct / dataset_sizes[phase]
 
-
-
-
 #         print(f'Loss: {epoch_loss:.4f} Acc: {epoch_acc*100:.1f}%')
 
 #         if phase == "train":
@@ -122,13 +93,42 @@ data_loader, dataset_sizes = create_data_loaders("data/cleaned_images_128/", Ima
 
 #   return model
 # 
-from neural_network_models import train 
 
-#%%
+
+
+
+
+# Data augmentation and normalization for training
+# Just normalization for validation
+data_transforms = {
+    'train': transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ]),
+    'val': transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ]),
+}
+
+
+# Other batch hyperparameters
+validation_split = 0.2
+batch_size = 64
+
+# Create data loaders
+data_loader, dataset_sizes = create_data_loaders("/content/drive/MyDrive/coding/cleaned_images_64/", ImageTextProductDataset, 64, data_transforms, validation_split=validation_split, batch_size=batch_size)
+
+
 # Checks if GPU is avaliable to run on.
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = CombinedModel(device=device).to(device)
+model = CombinedModel(device=device,text_model_load_location="/content/drive/MyDrive/coding/nlp_model_state.pt", image_model_load_location="/content/drive/MyDrive/coding/vision_model_state_64.pt" ).to(device)
 optimiser = torch.optim.SGD(model.parameters(), lr = 0.001, momentum=0.9) 
-model = train(40, model, optimiser,data_loader=data_loader, dataset_sizes=dataset_sizes, model_save_location="/content/drive/My Drive/coding/vision_model_state.pt", device=device, combined=True)
-# %%
+model = train(20, model, optimiser, model_save_location="/content/drive/My Drive/coding/combined_model_state.pt", device=device)
+
+
