@@ -12,11 +12,11 @@ from neural_network_models import CombinedModel
 
 text_processor = TextProcessor()
 image_processor = ImageProcessor()
-with open('models/decoder.pickle', 'rb') as f:
+with open('decoder.pickle', 'rb') as f:
     decoder = pickle.load(f)
 
 model = CombinedModel(decoder=decoder)
-model.load_state_dict(torch.load("models/combined_model_state.pt", map_location=torch.device("cpu")))
+model.load_state_dict(torch.load("combined_model_state.pt", map_location=torch.device("cpu")))
 
 app = FastAPI()
 

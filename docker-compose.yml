@@ -2,12 +2,10 @@ version: '3.4'
 
 services:
   api-service:
-    # build: 
-    #   context: .
-    #   dockerfile: dockerfolder/dockerfile
+    build: ./dockerfolder
     image: amywinder900/fb
-    volumes:
-      - ~/dockerfolder:/app
+    # volumes:
+    #   - ~/dockerfolder:/app
     ports:
       - 8080:8080
     restart: always
