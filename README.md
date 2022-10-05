@@ -279,6 +279,11 @@ Non-trainable params: 670,400
 ===========================================================================
 
 # API
+To allow a user to predict product category without the need for coding ability, FastAPI is utilised. 
+
+This can be run using uvicorn to update the localhost to run the api.py file. 
 
 ## data_processor
 The ImageProcessor and TextProcessor classes prepare data to be sent in to the models. ImageProcessor can be called on a PIL Image. TextProcessor can be called on a string.
+
+
