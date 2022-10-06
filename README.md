@@ -223,8 +223,10 @@ This function creates the dataloaders with a training and validation split.
 ## Network Structures 
 The image model takes advantage of Resnet50 via transfer learning. The final few layers have been replaced to suit this task. The text model consists of convolution layers and linear layers. Finally the combined model combines the two and applies a final linear layer, meaning that the text model and the image model can be trained seperately. The models and their layers are as follows:
  
+```
+===========================================================================
 Layer (type:depth-idx)                             Param #
-
+===========================================================================
 CombinedModel                                      --
 ├─TextModel: 1-1                                   --
 │    └─Sequential: 2-1                             --
@@ -271,11 +273,12 @@ CombinedModel                                      --
 │    │    │    └─Linear: 4-22                      3,341
 ├─Sequential: 1-3                                  --
 │    └─Linear: 2-3                                 351
-
+===========================================================================
 Total params: 49,900,217
 Trainable params: 49,229,817
 Non-trainable params: 670,400
-
+===========================================================================
+```
 
 # API
 To allow a user to predict product category without the need for coding ability, FastAPI is utilised. 
@@ -288,3 +291,4 @@ The ImageProcessor and TextProcessor classes prepare data to be sent in to the m
 ## Cloud Migration
 
 A docker-compose file allows for real time updates of the docker image, as well as potential application expansion further down the line. To allow the code to function as expected, a combined_model_state.pt file is required in the dockerfolder.
+
